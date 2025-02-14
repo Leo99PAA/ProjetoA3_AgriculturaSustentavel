@@ -1,0 +1,153 @@
+package com.mycompany.conexaodbprojetousers;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
+public class Doenca {
+    private int id;
+    private String nome;
+    private String sintomas;
+    private String tratamento;
+    
+    
+    public void Inserir_Doenca() throws SQLException {
+        String SQL = "INSERT INTO pragadoenca(nome_doenca, sintomas_doenca, tratamento_doenca)VALUES (?,?,?)";
+
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setString(1, getNome());
+            ps.setString(2, getSintomas());
+            ps.setString(3, getTratamento());
+            ps.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void Atualizar_Doenca() throws SQLException {
+        String SQL = "UPDATE pragadoenca SET nome_doenca = ?, sintomas_doenca = ?, tratamento_doenca = ? WHERE id_doenca = ?";
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setString(1, getNome());
+            ps.setString(2, getSintomas());
+            ps.setString(3, getTratamento());
+            ps.setInt(4, getId());
+            int linhasAfetadas = ps.executeUpdate();
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao atualizar doença: " + e.getMessage(), e);
+        }
+    }
+    public void Deletar_Doenca() throws SQLException {
+        String SQL = "DELETE FROM pragadoenca WHERE id_doenca = ?";
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setInt(1, getId());
+            int linhasAfetadas = ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao deletar doença: " + e.getMessage(), e);
+        }
+    }
+public void Listar_Doenca() throws SQLException {
+        String SQL = "SELECT * FROM pragadoenca";
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id_planta");
+                String nome = rs.getString("Nome_Planta");
+                String sintomas = rs.getString("Epoca_Plantio");
+                String tratamento= rs.getString("Cultivo_Planta");
+
+                String aux = String.format("ID:%d, Nome:%s, Sintomas:%s, Tratamento:%s", id, nome, sintomas, tratamento);
+                JOptionPane.showMessageDialog(null, aux);
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao listar doenças: " + e.getMessage(), e);
+        }
+    }
+
+public void consultar(String nome) {
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        String SQL = "SELECT * FROM pragadoenca WHERE nome_doenca = ?";
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setString(1, nome);
+            ResultSet rs = ps.executeQuery();
+            //verificando se a consulta encontrou cultivo com o nome informado
+            if (rs.next()) {
+                setNome(rs.getString("nome_doenca"));
+                setSintomas(rs.getString("sintomas_doenca"));
+                setTratamento(rs.getString("tratamento_doenca"));
+                return;
+            } else {
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao consultar cultivos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the nome
+     */
+    public String getNome() {
+        return nome;
+    }
+
+    /**
+     * @param nome the nome to set
+     */
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    /**
+     * @return the sintomas
+     */
+    public String getSintomas() {
+        return sintomas;
+    }
+
+    /**
+     * @param sintomas the sintomas to set
+     */
+    public void setSintomas(String sintomas) {
+        this.sintomas = sintomas;
+    }
+
+    /**
+     * @return the tratamento
+     */
+    public String getTratamento() {
+        return tratamento;
+    }
+
+    /**
+     * @param tratamento the tratamento to set
+     */
+    public void setTratamento(String tratamento) {
+        this.tratamento = tratamento;
+    }
+}
