@@ -1,0 +1,175 @@
+package com.mycompany.conexaodbprojetousers;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
+public class Cultivo {
+
+    private int id;
+    private String nome;
+    private String epoca;
+    private String cultivo;
+    private String manutencao;
+
+    public Cultivo() {
+
+    }
+
+    public void Inserir_Cultivo() throws SQLException {
+        String SQL = "INSERT INTO Planta(Nome_Planta, Epoca_Plantio, Manutencao_Diaria)VALUES (?,?,?)";
+
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setString(1, getNome());
+            ps.setString(2, getEpoca());
+            ps.setString(3, getManutencao());
+            ps.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void Atualizar_Cultivo() throws SQLException {
+        String SQL = "UPDATE Planta SET Nome_planta = ?, Epoca_Plantio = ?, Manutencao_Diaria = ? WHERE id_planta = ?";
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setString(1, getNome());
+            ps.setString(2, getEpoca());
+            ps.setString(3, getManutencao());
+            ps.setInt(4, getId());
+            int linhasAfetadas = ps.executeUpdate();
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao atualizar cultivo: " + e.getMessage(), e);
+        }
+    }
+
+    public void Deletar_Cultivo() throws SQLException {
+        String SQL = "DELETE FROM Planta WHERE id_planta = ?";
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setInt(1, getId());
+            int linhasAfetadas = ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao deletar cultivo: " + e.getMessage(), e);
+        }
+    }
+
+    public void Listar_Cultivo() throws SQLException {
+        String SQL = "SELECT * FROM Plantio";
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id_planta");
+                String nome = rs.getString("Nome_Planta");
+                String epoca = rs.getString("Epoca_Plantio");
+                String cultivo = rs.getString("Cultivo_Planta");
+                String manutencao = rs.getString("Manutencao_Diaria");
+
+                String aux = String.format("ID:%d, Nome:%s, Epoca:%s, Cultivo:%s, Manutenção:%s", id, nome, epoca, cultivo, manutencao);
+                JOptionPane.showMessageDialog(null, aux);
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao listar usuarios: " + e.getMessage(), e);
+        }
+    }
+
+    public void consultar(String nome) {
+        ConexaoDBprojeto conexao = new ConexaoDBprojeto();
+        String SQL = "SELECT * FROM Planta WHERE Nome_Planta = ?";
+        try (Connection c = conexao.obtemConexao()) {
+            PreparedStatement ps = c.prepareStatement(SQL);
+            ps.setString(1, nome);
+            ResultSet rs = ps.executeQuery();
+            //verificando se a consulta encontrou cultivo com o nome informado
+            if (rs.next()) {
+                setNome(rs.getString("nome_planta"));
+                setEpoca(rs.getString("epoca_plantio"));
+                setManutencao(rs.getString("manutencao_diaria"));
+                return;
+            } else {
+                return;
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao consultar cultivos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the nome
+     */
+    public String getNome() {
+        return nome;
+    }
+
+    /**
+     * @param nome the nome to set
+     */
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    /**
+     * @return the epoca
+     */
+    public String getEpoca() {
+        return epoca;
+    }
+
+    /**
+     * @param epoca the epoca to set
+     */
+    public void setEpoca(String epoca) {
+        this.epoca = epoca;
+    }
+
+    /**
+     * @return the cultiivo
+     */
+    public String getCultivo() {
+        return cultivo;
+    }
+
+    /**
+     * @param cultiivo the cultiivo to set
+     */
+    public void setCultivo(String cultiivo) {
+        this.cultivo = cultivo;
+    }
+
+    /**
+     * @return the manutencao
+     */
+    public String getManutencao() {
+        return manutencao;
+    }
+
+    /**
+     * @param manutencao the manutencao to set
+     */
+    public void setManutencao(String manutencao) {
+        this.manutencao = manutencao;
+    }
+}
